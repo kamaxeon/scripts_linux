@@ -72,7 +72,7 @@ done
 
 
 # Movemos lo que hay en el directorio es
-mv ${DIR_FINAL} %{DIR_FINAL}.old
+mv ${DIR_FINAL} ${DIR_FINAL}.old
 
 mkdir -p ${DIR_FINAL}
 

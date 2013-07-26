@@ -9,7 +9,7 @@
    El motivo de este SQL es de disponer de una regla de iptables de forma nativa
    dentro de la interfaz web de elastix, para ejecutarlo sólo hay que hacer lo siguiente
 
-   cat parche_dhcpd.sql | sqlite3 /var/www/db/iptables.db 
+   cat parche_iptables_dhcpd.sql | sqlite3 /var/www/db/iptables.db 
 
 **/
 

@@ -1,20 +1,26 @@
 /**
 
-   Autor: Israel Santana <isra@miscorreos.org>
+Autor: Israel Santana <isra@miscorreos.org>
 
-   Licencia: GPL v2
+Version: 0.2
 
-   Valido para Elastix 2.4
+Licencia: GPL v2
 
-   El motivo de este SQL es de disponer de una regla de iptables de forma nativa
-   dentro de la interfaz web de elastix, para ejecutarlo sólo hay que hacer lo siguiente
+Valido para Elastix 2.4
 
-   cat parche_iptables_dhcpd.sql | sqlite3 /var/www/db/iptables.db 
+El motivo de este SQL es de disponer de una regla de iptables de forma nativa
+dentro de la interfaz web de elastix, debido a la configuración por defecto del dhcpd.conf
+que establece como servidor horario a Elastix, se habilitada la regla para ntp
+
+Para ejecutarlo sólo hay que hacer lo siguiente
+
+cat parche_iptables_dhcpd.sql | sqlite3 /var/www/db/iptables.db
 
 **/
 
--- Insertando la nueva linea para definicion de los puertos del dhcp
+-- Insertando la nueva linea para definicion de los puertos del dhcp y ntp
 INSERT INTO port (name,protocol,details,comment) VALUES ('DHCPD', 'UDP', '67:68', '67:68');
+INSERT INTO port (name,protocol,details,comment) VALUES ('NTPD', 'UDP', '123:123', '123:123');
 
 -- Borrando las reglas necesarias para volver a crearlas en orden
 DELETE FROM filter where id=9;
@@ -48,67 +54,73 @@ VALUES
 INSERT INTO filter
  ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
 VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','5','ACCEPT',11,1,'');
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','6','ACCEPT',12,1,'');
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','1','ACCEPT',13,1,'');
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','3','ACCEPT',14,1,'');
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'UDP', 'ANY','19','ACCEPT',11,1,'');
 
 
 INSERT INTO filter
  ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
 VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','10','ACCEPT',15,1,'');
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','5','ACCEPT',12,1,'');
 
 INSERT INTO filter
  ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
 VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','2','ACCEPT',16,1,'');
-
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','4','ACCEPT',17,1,'');
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','6','ACCEPT',13,1,'');
 
 INSERT INTO filter
  ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
 VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','7','ACCEPT',18,1,'');
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','1','ACCEPT',14,1,'');
 
 INSERT INTO filter
  ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
 VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','8','ACCEPT',19,1,'');
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','9','ACCEPT',20,1,'');
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'STATE', '','','ACCEPT',21,1,'Established,Related');
-
-INSERT INTO filter
- ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
-VALUES
- ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'ALL', '','','REJECT',22,1,'');
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','3','ACCEPT',15,1,'');
 
 
 INSERT INTO filter
  ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
 VALUES
- ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0', 'ALL', '','','REJECT',23,1,'');
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','10','ACCEPT',16,1,'');
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','2','ACCEPT',17,1,'');
+
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','4','ACCEPT',18,1,'');
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','7','ACCEPT',19,1,'');
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','8','ACCEPT',20,1,'');
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'TCP', 'ANY','9','ACCEPT',21,1,'');
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'STATE', '','','ACCEPT',22,1,'Established,Related');
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('INPUT','ANY','','0.0.0.0/0','0.0.0.0/0', 'ALL', '','','REJECT',23,1,'');
+
+
+INSERT INTO filter
+ ('traffic','eth_in','eth_out','ip_source','ip_destiny','protocol','sport','dport','target','rule_order', 'activated','state')
+VALUES
+ ('FORWARD','ANY','ANY','0.0.0.0/0','0.0.0.0/0', 'ALL', '','','REJECT',24,1,'');

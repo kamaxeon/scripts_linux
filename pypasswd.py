@@ -39,7 +39,6 @@ all_characters = lower_abc + upper_abc + numbers + characters
 l = len(all_characters)
 
 def check_password(passwd):
-  rep = args.com
   if not check_dict_password(passwd, lower_abc):
     return False
   if not check_dict_password(passwd, upper_abc):

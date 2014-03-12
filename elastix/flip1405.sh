@@ -40,32 +40,53 @@ INTANDIP="eth0:192.168.220.3:24 eth1:10.50.0.15:16 eth2:192.168.222.3:24"
 PORT_CHECK="4569"
 
 # Services 
-SERVICES="amportal dhcpd ntpd httpd"
+SERVICES="asterisk dhcpd ntpd httpd"
 
 
-# Directories to sync
-DIRS="balala dfdsfasfd"
+# Directories to sync, must end with a slash "/"
+DIRS="/etc/asterisk/ /var/spool/asterisk/voicemail/ /var/lib/asterisk/moh/ /var/lib/asterisk/sounds/ /var/www/ /tftpboot/"
 
 # Files to sync
-FILES="fddsf dflafj"
+FILES="/etc/passwd /etc/shadow /etc/group /etc/amportal.conf /etc/php.ini /etc/hosts /etc/ntp.conf"
 
-# Don't change anything from here !!!!!!!!!!!!!!1
+# Don't change anything from here !!!!!!!!!!!!!!
 
-
-
+# Rsync command
+RSYNC="/usr/bin/rsync -azr"
 
 # The localhost IP
 LOCALHOST="127.0.0.1"
 
 
+# Sync Files and Dir
+# $1 Destination Server
+function syncDirsAndFiles(){
+
+	DEST=$1
+
+	# Configuration File Replication from Master to Slave
+	# Basic Asterisk files
+	for i in $DIRS; do
+		# Make sure directory ends in a slash
+		[[ $i != */ ]] && i="$i"/
+		$RSYNC $i root@$DEST:$i
+	done
+
+	for i in $FILES; do
+		$RSYNC $i root@$DEST:$i
+	done
+}
+
 # Change Interfaces
 # $1 add or del
-function changeInterfaces() {
+function changeInterfaces(){
 	ACTION=$1
 
 	# HeartBeat Interface
 	addVirtualIPs ${ACTION} ${HBFLOATIP} ${HBMASK} ${HBDEVICE}
-
+	if [ "$ACTION" == "add" ]; then
+		addArpPing ${HBDEVICE} ${HBFLOATIP}
+	fi
 	# Rest of interfaces
 	for zone in $INTANDIP
 	do
@@ -76,8 +97,11 @@ function changeInterfaces() {
 
 		# Configuring the interface
 		addVirtualIPs ${ACTION} ${TEMPIP} ${TEMPMASK} ${TEMPDEVICE}
-
+		if [ "$ACTION" == "add" ]; then
+			addArpPing ${TEMPDEVICE} ${TEMPIP}
+		fi
 	done
+	
 
 }
 
@@ -85,14 +109,18 @@ function changeInterfaces() {
 # Change Services
 # $1 stop, start, restart
 function changeServices(){
-
+	ACTION=$1
+	for SERVICE in $SERVICES
+	do
+		service $SERVICE $ACTION
+	done
 }
 
 
 # Check Asterisk Port
 # $1 IP of the check
 function checkAsteriskPort(){
-	RESULT=$(nmap --system-dns -p ${PORT_CHECK} -sU ${1} | awk '{print $2}' | grep open)
+	RESULT=$(nmap --system-dns -p $PORT_CHECK -sU $1 | awk '{print $2}' | grep open)
 	echo $RESULT
 }
 
@@ -109,17 +137,21 @@ function addVirtualIPs(){
 # $1 Device
 # $2 FLOATIP
 function addArpPing(){
+	DEVICE=$1
+	FLOATIP=$2
 	/sbin/arping -U -c 5 -I $DEVICE $FLOATIP
 }
 
-# Activate Asterisk Node
+# Activate Asterisk Master Node
 function activateNode(){
-
+	changeInterfaces add
+	changeServices restart
 }
 
 # Desactivate Asterisk Node
 function desactivateNode {
-
+	changeInterfaces del
+	changeServices stop
 }
 
 
@@ -130,68 +162,50 @@ NODEASTERISKSTATUS=$(checkAsteriskPort $LOCALHOST)
 VIRTUALIPSTATE=$(nmap --system-dns -sP "$HBFLOATIP" | grep down | awk '{print $4}')
 
 
-#if local node owns HertBeat Virtual IP 
-NODEVIRTUALIP=$(/sbin/ip add show "$IFACE" | grep "$HBFLOATIP"/"$HBMASK" | awk '{print $2}' | awk -F "/" '{print $1}')
+#if local node has HertBeat Virtual IP 
+NODEVIRTUALIP=$(/sbin/ip add show $IFACE | grep $HBFLOATIP/$HBMASK | awk '{print $2}' | awk -F / '{print $1}')
 
-exit 0
+
 if [ "$MASTER" == "1" ] ; then
 	# Configuration File Replication from Master to Slave
-	rsync -avzr --rsh=ssh /etc/asterisk/ root@$HBSLAVEIP:/etc/asterisk/
-	rsync -avzr --rsh=ssh /var/spool/asterisk/voicemail root@$HBSLAVEIP:/var/spool/asterisk
-	rsync -avzr --rsh=ssh /var/lib/asterisk/moh root@$HBSLAVEIP:/var/lib/asterisk
-	rsync -avzr --rsh=ssh /var/lib/asterisk/sounds root@$HBSLAVEIP:/var/lib/asterisk
-	rsync -avzr --rsh=ssh /var/www/html root@$HBSLAVEIP:/var/www
-	rsync -avzr --rsh=ssh /var/www/db root@$HBSLAVEIP:/var/www
-	rsync -avzr --rsh=ssh /tftpboot root@$HBSLAVEIP:/
-	#rsync -avzr --rsh=ssh /usr/src root@$HBSLAVEIP:/usr/src
+	syncDirsAndFiles ${HBSLAVEIP}
+
 
 	#/root/rsync_replicate > /dev/null 2> /dev/null
 	if [ "$NODEASTERISKSTATUS" == "open|filtered" ] ; then  ###is primary asterisk up?
 		if [ "$NODEVIRTUALIP" != "$HBFLOATIP" ] ; then  ###does primary not own virtual ip?
 			if [ "$VIRTUALIPSTATE" == "down." ] ; then  ###is the virtual IP not pingable?
-
-				# Starting up the virtual IP's
-				addVirtualIPs "add" ${HBMASTERIP} ${HBMASK} ${DEVICE}
-
-				# Executing for every interfaces 
-				addArpPing $DEVICE $FLOATIP  ###Gratuitous ARP request
-				/sbin/service asterisk restart
-				/sbin/service httpd restart
-				/sbin/service ntpd restart
+				
+				echo "Hola Mundo"
+				# Activate Master Node
+				activateNode
 
 			fi
 		fi
 	else
-		/sbin/service asterisk start
-		/sbin/service httpd restart
-		/sbin/service ntpd restart
-		/sbin/ifconfig $IFACE down
+		# Check node status
+		desactivateNode
 	fi
 else # We must be running as Slave node
 	if [ "$MASTERASTERISKSTATUS" != "open|filtered" ] ; then   ###is primary asterisk down?
 		if [ "$NODEASTERISKSTATUS" == "open|filtered" ] ; then     ###is secondary asterisk up?
 			if [ "$NODEVIRTUALIP" != "$HBFLOATIP" ] ; then   ###does secondary not own virtual ip?
 				if [ "$VIRTUALIPSTATE" == "down." ] ; then  ###is the virtual IP not pingable?
-					/sbin/ifconfig $IFACE $FLOATIP/24 up
-					/sbin/arping -U -c 5 -I $DEVICE $FLOATIP   ###Gratuitous ARP request
-					/sbin/service asterisk restart
-					/sbin/service httpd restart
-					/sbinservice ntpd restart
+					# Activate Node
+					activateNode
 				fi
 			fi
 		else
-			/sbin/service asterisk start
-			/sbin/service httpd restart
-			/sbin/service ntpd restart
+			changeServices stop
 		fi
 	else
-		if [ "$SECSTATUS" == "open|filtered" ] ; then ###primary is up, is secondary up? (there can be only one!)
-			/sbin/service asterisk stop
+		if [ "$NODEASTERISKSTATUS" == "open|filtered" ] ; then ###primary is up, is secondary up? (there can be only one!)
+			changeServices stop
 		else
 			echo
-			if [ "$NODEVIRTUALIP" == "$FLOATIP" ] ; then
+			if [ "$NODEVIRTUALIP" == "$HBFLOATIP" ] ; then
 				# If the Primary is up but we still own the Virtual IP, shut it down
-				/sbin/ifconfig $IFACE down
+				changeInterfaces del
 			fi
 		fi
 	fi

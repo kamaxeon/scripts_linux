@@ -1,16 +1,59 @@
 #!/bin/bash
 
+# Configurar acorde a los nodos
 # Ip's de los nodos
 NODE1="192.168.229.1"
 NODE2="192.168.229.2"
 
+DIRS="/etc/fail2ban/"
+
+FILES="/etc/sysconfig/iptables "
+
+# No tocar a partir de aqui
+
+
+RSYNC="/usr/bin/rsync -azr"
+
+# Sync Ficheros y directorios
+# $1 Servidor de destino
+function syncDirsAndFiles(){
+
+	DEST=$1
+
+
+	for i in $DIRS; do
+		# Para asegurarse que termina el directorio con una /
+		[[ $i != */ ]] && i="$i"/
+		$RSYNC $i root@$DEST:$i
+	done
+
+	for i in $FILES; do
+		$RSYNC $i root@$DEST:$i
+	done
+}
+
+
+
 # Para saber si el nodo en el que estoy es el nodo activo, compruebo el asterisk
-ASTERISK_STATUS=$(nmap --system-dns -p 4569 -sU 127.0.0.1 | awk '{print $2}' | grep open)
+nmap --system-dns -p 4569 -sU 127.0.0.1 | awk '{print $2}' | grep open > /dev/null
 
-# Ahora compruebo si tengo el Asterisk activo y en funcin de eso ejecuto lo que necesito
+# Ahora compruebo si tengo el Asterisk activo y en funcion de eso ejecuto lo que necesito
 
-if [ "$ASTERISK_STATUS" == "open|filtered"] ; then
+if [ $? -eq 0 ] ; then
 
-	#ssh $SLAVE "service iptables restart"
-	#ssh $SLAVE "service iptables restart"
+	# Ahora debo comprobar cual es mi ip y en funcion de mi ip saber la ip del nodo pasivo
+	ip add show | grep $NODE1 > /dev/null
+
+	if [ $? -eq 0 ] ; then
+		SLAVE=$NODE2
+	else
+		SLAVE=$NODE1
+	fi
+
+	# Sincronizar servicios
+	syncDirsAndFiles $SLAVE
+
+	# Reiniciar servicios
+	ssh $SLAVE "service iptables restart"
+	ssh $SLAVE "service fail2ban restart"
 fi

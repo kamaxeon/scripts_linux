@@ -8,5 +8,5 @@ initdead 120
 udpport 694
 bcast bond0
 auto_failback off
-node pbx1
-node pbx2
+node pbx1.local
+node pbx2.local

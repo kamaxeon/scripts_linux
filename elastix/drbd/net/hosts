@@ -1,8 +1,2 @@
-# Do not remove the following line, or various programs
-# that require network functionality will fail.
-127.0.0.1       localhost localhost.localdomain localhost
-::1             localhost6.localdomain6 localhost6
-
-10.50.0.16      pbx1.astican.loc pbx1
-10.50.0.17      pbx2.astican.loc pbx2
-10.50.0.15      pbx.astican.loc pbx
+192.168.229.1      pbx1.local
+192.168.229.2      pbx2.local

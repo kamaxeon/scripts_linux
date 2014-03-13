@@ -29,7 +29,8 @@ COMMIT
 -A ELASTIX_INPUT -i eth0 -p udp -m udp --dport 123 -j ACCEPT 
 -A ELASTIX_INPUT -i eth1 -p tcp -m tcp --dport 22 -j ACCEPT 
 -A ELASTIX_INPUT -i eth1 -p tcp -m tcp --dport 80 -j ACCEPT 
--A ELASTIX_INPUT -i eth1 -p tcp -m tcp --dport 443 -j ACCEPT 
+-A ELASTIX_INPUT -i eth1 -p tcp -m tcp --dport 443 -j ACCEPT
+ A ELASTIX_INPUT -i eth1 -p tcp -m tcp --dport 8123 -j ACCEPT
 -A ELASTIX_INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT 
 -A ELASTIX_INPUT -j REJECT --reject-with icmp-port-unreachable 
 COMMIT

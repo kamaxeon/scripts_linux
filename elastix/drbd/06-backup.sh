@@ -14,6 +14,8 @@ rm -rf /var/lib/mysql/
 rm -rf /var/log/asterisk/
 rm -rf /var/www
 rm -rf /tftpboot
+rm -rf /opt/NEXTOR/
+rm -rf /var/log/mangoanalytics/
 
 
 ln -s /replica/etc/asterisk/ /etc/asterisk
@@ -24,6 +26,8 @@ ln -s /replica/var/lib/mysql/ /var/lib/mysql
 ln -s /replica/var/log/asterisk/ /var/log/asterisk
 ln -s /replica/var/www /var/www
 ln -s /replica/tftpboot /tftpboot
+ln -s /replica/opt/NEXTOR /opt/NEXTOR
+ln -s /replica/var/log/mangoanalytics/ /var/log/mangoanalytics/
 
 
 service mysqld restart

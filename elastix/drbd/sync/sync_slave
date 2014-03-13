@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Ip's de los nodos
+NODE1="192.168.229.1"
+NODE2="192.168.229.2"
+
+# Para saber si el nodo en el que estoy es el nodo activo, compruebo el asterisk
+ASTERISK_STATUS=$(nmap --system-dns -p 4569 -sU 127.0.0.1 | awk '{print $2}' | grep open)
+
+# Ahora compruebo si tengo el Asterisk activo y en funcin de eso ejecuto lo que necesito
+
+if [ "$ASTERISK_STATUS" == "open|filtered"] ; then
+
+	#ssh $SLAVE "service iptables restart"
+	#ssh $SLAVE "service iptables restart"
+fi

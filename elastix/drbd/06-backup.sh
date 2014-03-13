@@ -3,6 +3,9 @@
 sh header.sh
 
 mkdir /replica ; drbdadm primary r0 ; mount /dev/drbd0 /replica
+
+ls /replica
+
 rm -rf /etc/asterisk
 rm -rf /var/lib/asterisk
 rm -rf /usr/lib/asterisk/
@@ -11,12 +14,6 @@ rm -rf /var/lib/mysql/
 rm -rf /var/log/asterisk/
 rm -rf /var/www
 rm -rf /tftpboot
-
-# Incluir fail2ban
-
-# Incluir dhcpd.conf y options
-
-# Mirar incluir var lib dhcp
 
 
 ln -s /replica/etc/asterisk/ /etc/asterisk
@@ -35,6 +32,8 @@ service asterisk stop
 service httpd stop
 service elastix-updaterd stop
 service elastix-portknock stop
+service dhcpd stop
+service ntp stop
 
 umount /replica/ ; drbdadm secondary r0
 

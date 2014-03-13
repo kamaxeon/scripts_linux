@@ -1,0 +1,10 @@
+# Intel Corporation I350 Gigabit Network Connection
+DEVICE=eth4
+HWADDR=F8:0F:41:F9:6D:EC
+ONBOOT=yes
+HOTPLUG=no
+BOOTPROTO=none
+TYPE=Ethernet
+SLAVE=yes
+NM_CONTROLLED=no
+MASTER=bond0

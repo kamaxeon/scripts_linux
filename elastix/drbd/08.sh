@@ -4,6 +4,7 @@ sh header.sh
 
 chkconfig drbd on
 chkconfig dhcpd off
+chkconfig ntp off
 chkconfig asterisk off
 chkconfig mysqld off
 chkconfig httpd off
@@ -15,15 +16,16 @@ service asterisk stop
 service httpd stop
 service elastix-portknock stop
 service elastix-updaterd stop
+service ntp stop
 
 echo "Copiando ha.cf"
-cp -a ha.cf /etc/ha.d/ha.cf
+cp -a ha/ha.cf /etc/ha.d/ha.cf
 
 echo "Copiando authkeys"
-cp -a authkeys /etc/ha.d/authkeys
+cp -a ha/authkeys /etc/ha.d/authkeys
 
 echo "Copiando haresources"
-cp -a haresources /etc/ha.d/haresources
+cp -a ha/haresources /etc/ha.d/haresources
 
 echo "Arrancando heartbeat"
 service heartbeat start
@@ -33,6 +35,6 @@ chkconfig --add heartbeat
 chkconfig heartbeat on
 
 echo "Copiando fop_start del apendice B"
-cp -a fop_start /etc/init.d/
+cp -a fop/fop_start /etc/init.d/
 
 sh footer.sh 28 35 YES

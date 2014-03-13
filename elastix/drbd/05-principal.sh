@@ -22,11 +22,11 @@ tar -zxvf var-www.tgz
 tar -zcvf tftpboot.tgz /tftpboot/
 tar -zxvf tftpboot.tgz
 
-# Incluir fail2ban
+# Copiando el fichero base de datos
+cp -a /root/elastix/drbd/iptables/iptables.db /var/www/db/iptables.db
+chown asterisk:asterisk /var/www/db/iptables.db
+chmod 644 /var/www/db/iptables.db
 
-# Incluir dhcpd.conf y options
-
-# Mirar incluir var lib dhcp
 
 rm -rf /etc/asterisk
 rm -rf /var/lib/asterisk
@@ -55,6 +55,8 @@ service asterisk stop
 service httpd stop
 service elastix-updaterd stop
 service elastix-portknock stop
+service dhcpd stop
+service ntp stop
 
 umount /replica ; drbdadm secondary r0
 

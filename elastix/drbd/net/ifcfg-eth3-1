@@ -1,0 +1,7 @@
+# Intel Corporation I350 Gigabit Network Connection
+DEVICE=eth3
+HWADDR=90:1B:0E:0A:37:A3
+ONBOOT=no
+HOTPLUG=no
+BOOTPROTO=none
+TYPE=Ethernet

@@ -4,6 +4,6 @@ pbx1 \
 	IPaddr::10.50.0.15/16/eth1/10.50.255.255 \
 	IPaddr::192.168.223.3/24/eth2/192.168.223.255 \
 	mysqld asterisk httpd dhcpd elastix-updaterd \
-	elastix-portknock fop_start fail2ban
-
+	elastix-portknock ntp fop_start
+	
 pbx1 MailTo::informatica@astican.es,informatica@astican.es::DRBD/HA-ALERT

@@ -1,0 +1,8 @@
+pbx1 \
+	drbddisk::r0 Filesystem::/dev/drbd0::/replica::ext3 \
+	IPaddr::192.168.220.3/24/eth0/192.168.220.255 \
+	IPaddr::192.168.220.3/24/eth1/192.168.220.255 \
+	IPaddr::192.168.220.3/24/eth2/192.168.220.255 \
+	mysqld asterisk httpd dhcpd elastix-updaterd elastix-portknock fop_start
+
+pbx1 MailTo::informatica@astican.es,informatica@astican.es::DRBD/HA-ALERT

@@ -1,0 +1,12 @@
+debugfile /var/log/ha-debug
+logfile /var/log/ha-log
+logfacility local0
+keepalive 2
+deadtime 30
+warntime 10
+initdead 120
+udpport 694
+bcast bond0
+auto_failback off
+node pbx1
+node pbx2

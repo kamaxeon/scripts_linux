@@ -60,6 +60,11 @@ cp -a net/dhcpd /etc/sysconfig/dhcpd
 chown root:root /etc/sysconfig/dhcpd
 chmod 644 /etc/sysconfig/dhcpd
 
+echo "- Personalizando la plantilla de dhcpconfig"
+cp -a net/dhcpconfig /usr/share/elastix/privileged/dhcpconfig
+chown root:root /usr/share/elastix/privileged/dhcpconfig
+chmod 755 /usr/share/elastix/privileged/dhcpconfig
+
 echo "- Configurar el cortafuegos"
 cp -a iptables/iptables /etc/sysconfig/iptables
 chown root:root /etc/sysconfig/iptables
@@ -76,9 +81,7 @@ cp -a net/ntp.conf /etc/ntp.conf
 chown root:root /etc/ntp.conf
 chmod 644 /etc/ntp.conf
 
-echo "Configuracion ssh entre nodos"
-ssh-keygen -t rsa
-ssh-copy-id -i ~/.ssh/id_rsa.pub 192.168.229.$NODO
+
 
 echo "- Instalar el modulo fail2ban para elastix"
 yum install -y elastix-anti_hacker.noarch
@@ -127,3 +130,7 @@ cp -a fop/fop_start /etc/init.d/
 chown root:root /etc/init.d/fop_start
 chmod 755 /etc/init.d/fop_start
 
+echo "Configuracion ssh entre nodos"
+ssh-keygen -t rsa
+
+echo "Ejecuta ssh-copy-id -i ~/.ssh/id_rsa.pub 192.168.229.X"

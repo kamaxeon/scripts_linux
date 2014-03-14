@@ -4,7 +4,7 @@ NODO=$1
 
 echo $NODO
 
-exit 0
+
 echo "Esto hay que hacerlo en los dos nodos antes de pasar al siguiente"
 echo "- Configurar las interfaces"
 

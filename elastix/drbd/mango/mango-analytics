@@ -38,6 +38,7 @@ OPTIONS="runwsgiserver port=$PORT daemonize=true pidfile=$PIDFILE \
 	host=$HOST workdir=$PROJECT \
 	server_user=$USER server_group=$GROUP"
 
+DESC="Mango Analytics"
 
 RETVAL=0
 
@@ -46,7 +47,7 @@ getpid() {
 }
 
 start() {
-    echo -n $"Starting Mango Analytics: "
+    echo -n $"Starting $DESC: "
     getpid
     if [ -z "$pid" ]; then
     	. $VIRTUALENV/bin/activate
@@ -63,7 +64,7 @@ start() {
 }
 
 stop() {
-    echo -n $"Stopping Mango Analytics: "
+    echo -n $"Stopping $DESC: "
     getpid
     RETVAL=$?
     if [ -n "$pid" ]; then
@@ -95,10 +96,10 @@ case "$1" in
   status)
         getpid
         if [ -n "$pid" ]; then
-                echo "Mango Analytics (pid $pid) is running..."
+                echo "$DESC (pid $pid) is running..."
         else
                 RETVAL=1
-                echo "Mango Analytics is stopped"
+                echo "$DESC is stopped"
         fi
         ;;
   restart)

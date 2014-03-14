@@ -1,9 +1,7 @@
 #!/bin/bash
 
 NODO=$1
-
-echo $NODO
-
+VECINO=$2
 
 echo "Esto hay que hacerlo en los dos nodos antes de pasar al siguiente"
 echo "- Configurar las interfaces"
@@ -81,7 +79,9 @@ cp -a net/ntp.conf /etc/ntp.conf
 chown root:root /etc/ntp.conf
 chmod 644 /etc/ntp.conf
 
-
+echo "Configuracion ssh entre nodos"
+ssh-keygen -t rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub $VECINO
 
 echo "- Instalar el modulo fail2ban para elastix"
 yum install -y elastix-anti_hacker.noarch
@@ -130,7 +130,3 @@ cp -a fop/fop_start /etc/init.d/
 chown root:root /etc/init.d/fop_start
 chmod 755 /etc/init.d/fop_start
 
-echo "Configuracion ssh entre nodos"
-ssh-keygen -t rsa
-
-echo "Ejecuta ssh-copy-id -i ~/.ssh/id_rsa.pub 192.168.229.X"

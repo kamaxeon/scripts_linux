@@ -23,19 +23,8 @@ tar -zcvf tftpboot.tgz /tftpboot/
 tar -zxvf tftpboot.tgz
 tar -zcvf opt-NEXTOR.tgz /opt/NEXTOR/
 tar -zcvf opt-NEXTOR.tgz
-tar -zxvf var-log-mangoanalytics.tgz
 tar -zcvf var-log-mangoanalytics.tgz /var/log/mangoanalytics/
 tar -zxvf var-log-mangoanalytics.tgz
-
-# Copiando el fichero base de datos
-cp -a /root/elastix/drbd/iptables/iptables.db /var/www/db/iptables.db
-chown asterisk:asterisk /var/www/db/iptables.db
-chmod 644 /var/www/db/iptables.db
-
-# Poner reglas fail2ban web
-cp -a fail2ban/settings.conf /var/www/html/modules/anti_hacker/configs/settings.conf
-chown root:root /var/www/html/modules/anti_hacker/configs/settings.conf
-chmod 644 /var/www/html/modules/anti_hacker/configs/settings.conf
 
 rm -rf /etc/asterisk
 rm -rf /var/lib/asterisk

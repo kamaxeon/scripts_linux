@@ -7,7 +7,7 @@ NODE2="192.168.229.2"
 
 DIRS="/etc/fail2ban/"
 
-FILES="/etc/sysconfig/iptables "
+FILES="/etc/sysconfig/iptables"
 
 # No tocar a partir de aqui
 

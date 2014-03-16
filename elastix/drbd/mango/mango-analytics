@@ -55,7 +55,7 @@ start() {
         RETVAL=$?
     fi
     if [ $RETVAL -eq 0 ]; then
-    	echo "is already running"
+    	echo_success
     else
         echo_failure
     fi

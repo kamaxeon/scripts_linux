@@ -10,8 +10,8 @@
 FECHA=`date +%Y%m%d`
 HOST=`hostname`
 
-USER=root
-PASS=Smclbnlpe3
+USER=
+PASS=
 MYSQL_DIR=/var/lib/mysql
 BACKUP_DIR=/var/backups/mysql
 BACKUP_FILENAME=${BACKUP_DIR}/${FECHA}-${HOST}.mysql.dump

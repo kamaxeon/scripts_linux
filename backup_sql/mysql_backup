@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#
+# Hace un dump de la base de datos mysql
+#
+# Autor: Tomas Guemes, Israel Santana (modificaciones)
+# Fecha: 26/11/2004
+#
+
+FECHA=`date +%Y%m%d`
+HOST=`hostname`
+
+USER=root
+PASS=Smclbnlpe3
+MYSQL_DIR=/var/lib/mysql
+BACKUP_DIR=/var/backups/mysql
+BACKUP_FILENAME=${BACKUP_DIR}/${FECHA}-${HOST}.mysql.dump
+BACKUP_LOG=${BACKUP_DIR}/${FECHA}-${HOST}.mysql.log
+
+#
+# Numero copias de seguridad que se dejan almacenadas en el servidor.
+#
+KEEP_BACKUP=10
+
+/usr/bin/mysqldump --all-databases --all --lock-tables --quick --quote-names -u ${USER} -p${PASS} > ${BACKUP_FILENAME} 2> ${BACKUP_LOG}
+
+#
+# Borrar copias atrasadas que sobrepasen el numero de copias indicado en $KEEP_BACKUP
+#
+
+NUM_COPIAS=`ls -1 ${BACKUP_DIR}/*-${HOST}.mysql.dump | wc -l`
+
+if [ $NUM_COPIAS -le $KEEP_BACKUP ]; then
+        echo Copias de seguridad almacenadas:
+        du -hsc ${BACKUP_DIR}/*-${HOST}.mysql.dump
+else
+        BORRAR=$[${NUM_COPIAS} - ${KEEP_BACKUP}]
+        ls -1 ${BACKUP_DIR}/*-${HOST}.mysql.dump | head -n $BORRAR | xargs rm
+        ls -1 ${BACKUP_DIR}/*-${HOST}.mysql.log | head -n $BORRAR | xargs rm
+
+        echo Copias de seguridad almacenadas:
+        du -hsc ${BACKUP_DIR}/*-${HOST}.mysql.dump
+fi
+
